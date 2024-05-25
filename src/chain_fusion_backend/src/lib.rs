@@ -5,7 +5,9 @@ mod fees;
 mod guard;
 mod job;
 mod lifecycle;
+mod stake;
 mod state;
+
 // mod storage;
 mod transactions;
 mod utils;
@@ -19,6 +21,7 @@ use lifecycle::InitArg;
 use state::read_state;
 
 use crate::state::{initialize_state, mutate_state};
+
 
 pub const SCRAPING_LOGS_INTERVAL: Duration = Duration::from_secs(3 * 60);
 
@@ -35,8 +38,8 @@ fn setup_timers() {
         })
     });
     // // Start scraping logs almost immediately after the install, then repeat with the interval.
-    ic_cdk_timers::set_timer(Duration::from_secs(10), || ic_cdk::spawn(scrape_eth_logs()));
-    ic_cdk_timers::set_timer_interval(SCRAPING_LOGS_INTERVAL, || ic_cdk::spawn(scrape_eth_logs()));
+    // ic_cdk_timers::set_timer(Duration::from_secs(10), || ic_cdk::spawn(scrape_eth_logs()));
+    // ic_cdk_timers::set_timer_interval(SCRAPING_LOGS_INTERVAL, || ic_cdk::spawn(scrape_eth_logs()));
 }
 
 #[ic_cdk::init]
@@ -58,6 +61,13 @@ async fn transfer_eth(value: u128, to: String) {
     }
     println!("transfer_eth: value={}, to={}", value, to);
     transactions::transfer_eth(value, to).await;
+}
+
+#[ic_cdk::update]
+async fn stake_eth(value: u128) {
+
+    stake::stake_eth(value).await;
+
 }
 
 // uncomment this if you need to serve stored assets from `storage.rs` via http requests
