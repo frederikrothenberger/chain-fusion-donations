@@ -19,7 +19,7 @@ pub async fn job(event_source: LogSource, event: LogEntry) {
         new_balance += prev_balance;
     }
     BalancesRepository::store_balance(received_eth_event.from, new_balance);
-    deposit_lido(received_eth_event.value);
+    deposit_lido(received_eth_event.value).await;
     println!("Received Eth Event: {:?}", received_eth_event);
 }
 

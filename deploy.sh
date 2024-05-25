@@ -11,10 +11,8 @@ else
     kill $anvil && echo "Terminated running Anvil process."
     sleep 3
 fi
-
 # start anvil with slots in an epoch send to 1 for faster finalised blocks
-anvil --fork-url https://rpc.ankr.com/eth_sepolia/d37b5f42b07c9f937a58be9e76ea7c565598e80d0be0eb9ef8831a77541dcf1a --fork-block-number 5974751 &
-
+anvil --slots-in-an-epoch 1 --fork-url https://rpc.ankr.com/eth_sepolia/d37b5f42b07c9f937a58be9e76ea7c565598e80d0be0eb9ef8831a77541dcf1a --fork-block-number 5974751 &
 # kill caddyserver
 caddy stop
 # start caddyserver
@@ -48,14 +46,14 @@ dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
         "0x52a6cdf67c40ce333b3d846e4e143db87f71dd7935612a4cafcf6ba76047ca1f";
       };
     };
-    last_scraped_block_number = 0: nat;
+    last_scraped_block_number = 5974751: nat;
     rpc_services = variant {
       Custom = record {
         chainId = 11155111 : nat64;
         services = vec { record { url = "https://localhost:8546"; headers = null } };
       }
     };
-    get_logs_address = vec { "0x5FbDB2315678afecb367f032d93F642f64180aa3" };
+    get_logs_address = vec { "0x219f09C912A765E456e154C14a0Cf9aC5e84F188" };
     block_tag = variant { Latest = null };
   },
 )'
