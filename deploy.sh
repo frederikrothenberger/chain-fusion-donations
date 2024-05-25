@@ -44,7 +44,7 @@ dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
     };
     get_logs_topics = opt vec {
       vec {
-        "0x031ada964b8e520743eb9508d0ace62654b126430b7e5a92b42e78eebb61602e";
+        "0x52a6cdf67c40ce333b3d846e4e143db87f71dd7935612a4cafcf6ba76047ca1f";
       };
     };
     last_scraped_block_number = 0: nat;
