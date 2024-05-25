@@ -18,6 +18,7 @@ use std::time::Duration;
 
 use eth_logs::scrape_eth_logs;
 
+use ethers_core::types::U256;
 use ic_cdk::println;
 use lifecycle::InitArg;
 use state::read_state;
@@ -61,14 +62,7 @@ async fn transfer_eth(value: u128, to: String) {
         ic_cdk::trap("only the controller can send transactions");
     }
     println!("transfer_eth: value={}, to={}", value, to);
-    transactions::transfer_eth(value, to).await;
-}
-
-#[ic_cdk::update]
-async fn stake_eth(value: u128) {
-
-    stake::stake_eth(value).await;
-
+    transactions::transfer_eth(U256::from(value), to, Some(U256::from(21000))).await;
 }
 
 // uncomment this if you need to serve stored assets from `storage.rs` via http requests
