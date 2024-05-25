@@ -5,7 +5,9 @@ mod fees;
 mod guard;
 mod job;
 mod lifecycle;
+mod stake;
 mod state;
+
 // mod storage;
 mod balances;
 mod storage;
@@ -16,13 +18,14 @@ use std::time::Duration;
 
 use eth_logs::scrape_eth_logs;
 
+use ethers_core::types::U256;
 use ic_cdk::println;
 use lifecycle::InitArg;
 use state::read_state;
 
 use crate::state::{initialize_state, mutate_state};
 
-pub const SCRAPING_LOGS_INTERVAL: Duration = Duration::from_secs(30);
+pub const SCRAPING_LOGS_INTERVAL: Duration = Duration::from_secs(3 * 60);
 
 fn setup_timers() {
     // as timers are synchronous, we need to spawn a new async task to get the public key
@@ -36,7 +39,7 @@ fn setup_timers() {
             });
         })
     });
-    // // Start scraping logs almost immediately after the install, then repeat with the interval.
+    // Start scraping logs almost immediately after the install, then repeat with the interval.
     ic_cdk_timers::set_timer(Duration::from_secs(10), || ic_cdk::spawn(scrape_eth_logs()));
     ic_cdk_timers::set_timer_interval(SCRAPING_LOGS_INTERVAL, || ic_cdk::spawn(scrape_eth_logs()));
 }
@@ -59,7 +62,7 @@ async fn transfer_eth(value: u128, to: String) {
         ic_cdk::trap("only the controller can send transactions");
     }
     println!("transfer_eth: value={}, to={}", value, to);
-    transactions::transfer_eth(value, to).await;
+    transactions::transfer_eth(U256::from(value), to, Some(U256::from(21000))).await;
 }
 
 // uncomment this if you need to serve stored assets from `storage.rs` via http requests

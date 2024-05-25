@@ -11,15 +11,8 @@ use crate::{
     state::{mutate_state, read_state},
 };
 
-pub async fn transfer_eth(value: u128, to: String) {
-    let request = create_sign_request(
-        U256::from(value),
-        Some(to),
-        None,
-        Some(U256::from(21000)),
-        None,
-    )
-    .await;
+pub async fn transfer_eth(value: U256, to: String, gas: Option<U256>) {
+    let request = create_sign_request(value, Some(to), None, gas, None).await;
 
     let tx = evm_signer::sign_transaction(request).await;
 

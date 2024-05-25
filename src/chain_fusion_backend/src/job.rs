@@ -1,15 +1,13 @@
-mod submit_result;
-
 use ethers_core::types::{Address, U256};
 use ic_cdk::println;
-use std::str::FromStr;
+
+use crate::balances::BalancesRepository;
+use crate::stake::deposit_lido;
 use crate::{
     evm_rpc::LogEntry,
     state::{mutate_state, LogSource},
 };
-use crate::balances::BalancesRepository;
-// use submit_result::submit_result;
-
+use std::str::FromStr;
 
 pub async fn job(event_source: LogSource, event: LogEntry) {
     mutate_state(|s| s.record_processed_log(event_source.clone()));
@@ -17,10 +15,11 @@ pub async fn job(event_source: LogSource, event: LogEntry) {
     // NewJob events we can safely assume that the event is a NewJob.
     let received_eth_event = ReceivedEthEvent::from(event);
     let mut new_balance = received_eth_event.value;
-    if let Some(prev_balance) = BalancesRepository::get_balance(received_eth_event.from.clone()) {
+    if let Some(prev_balance) = BalancesRepository::get_balance(received_eth_event.from) {
         new_balance += prev_balance;
     }
     BalancesRepository::store_balance(received_eth_event.from, new_balance);
+    deposit_lido(received_eth_event.value);
     println!("Received Eth Event: {:?}", received_eth_event);
 }
 

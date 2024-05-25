@@ -46,4 +46,5 @@ service : (InitArg) -> {
   get_evm_address : () -> (text) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
   transfer_eth : (nat, text) -> ();
+  stake_eth : (nat) -> ();
 }

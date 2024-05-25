@@ -13,7 +13,8 @@ else
 fi
 
 # start anvil with slots in an epoch send to 1 for faster finalised blocks
-anvil --slots-in-an-epoch 1 &
+anvil --fork-url https://rpc.ankr.com/eth_sepolia/d37b5f42b07c9f937a58be9e76ea7c565598e80d0be0eb9ef8831a77541dcf1a --fork-block-number 5974751 &
+
 # kill caddyserver
 caddy stop
 # start caddyserver
@@ -50,7 +51,7 @@ dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
     last_scraped_block_number = 0: nat;
     rpc_services = variant {
       Custom = record {
-        chainId = 31_337 : nat64;
+        chainId = 11155111 : nat64;
         services = vec { record { url = "https://localhost:8546"; headers = null } };
       }
     };
