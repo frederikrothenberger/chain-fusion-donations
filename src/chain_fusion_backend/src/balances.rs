@@ -117,10 +117,11 @@ pub struct BalancesRepository;
 
 impl BalancesRepository {
 
-    pub fn store_balance(&mut self, address: EthAddress, balance: EthBalance) {
-        let previous_value = DB.with_borrow(|db| db.get(&address));
+    pub fn get_balance(&self, address: EthAddress) -> Option<EthBalance> {
+        DB.with_borrow(|db| db.get(&address))
+    }
 
-        
-
+    pub fn store_balance(&mut self, address: EthAddress, new_balance: EthBalance) {
+        DB.with_borrow_mut(|db| db.insert(address, new_balance));
     }
 }
