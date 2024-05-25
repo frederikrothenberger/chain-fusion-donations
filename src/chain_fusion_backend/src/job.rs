@@ -31,8 +31,7 @@ impl From<LogEntry> for ReceivedEthEvent {
         let from =
             ethers_core::types::Address::from_str(&entry.topics[1][entry.topics[1].len() - 40..])
                 .expect("the address contained in the first topic should be valid");
-        let value =
-            U256::from_str_radix(&entry.data, 16).expect("the token id should be valid");
+        let value = U256::from_str_radix(&entry.data, 16).expect("the token id should be valid");
 
         ReceivedEthEvent { from, value }
     }

@@ -1,6 +1,7 @@
-use ic_stable_structures::{memory_manager::{MemoryId, MemoryManager, VirtualMemory}, storable::Bound, storable::Storable, DefaultMemoryImpl, StableBTreeMap, Memory};
-use minicbor_derive::{Decode, Encode};
-use std::borrow::Cow;
+use ic_stable_structures::{
+    memory_manager::{MemoryId, MemoryManager},
+    DefaultMemoryImpl,
+};
 use std::cell::RefCell;
 
 pub const BALANCES_MEMORY_ID: MemoryId = MemoryId::new(0);
