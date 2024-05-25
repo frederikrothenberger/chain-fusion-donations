@@ -3,18 +3,24 @@ mod submit_result;
 use ethers_core::types::{Address, U256};
 use ic_cdk::println;
 use std::str::FromStr;
-// use submit_result::submit_result;
-
 use crate::{
     evm_rpc::LogEntry,
     state::{mutate_state, LogSource},
 };
+use crate::balances::BalancesRepository;
+// use submit_result::submit_result;
+
 
 pub async fn job(event_source: LogSource, event: LogEntry) {
     mutate_state(|s| s.record_processed_log(event_source.clone()));
     // because we deploy the canister with topics only matching
     // NewJob events we can safely assume that the event is a NewJob.
     let received_eth_event = ReceivedEthEvent::from(event);
+    let mut new_balance = received_eth_event.value;
+    if let Some(prev_balance) = BalancesRepository::get_balance(received_eth_event.from.clone()) {
+        new_balance += prev_balance;
+    }
+    BalancesRepository::store_balance(received_eth_event.from, new_balance);
     println!("Received Eth Event: {:?}", received_eth_event);
 }
 
@@ -31,8 +37,7 @@ impl From<LogEntry> for ReceivedEthEvent {
         let from =
             ethers_core::types::Address::from_str(&entry.topics[1][entry.topics[1].len() - 40..])
                 .expect("the address contained in the first topic should be valid");
-        let value =
-            U256::from_str_radix(&entry.data, 16).expect("the token id should be valid");
+        let value = U256::from_str_radix(&entry.data, 16).expect("the token id should be valid");
 
         ReceivedEthEvent { from, value }
     }
