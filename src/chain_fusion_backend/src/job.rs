@@ -1,7 +1,7 @@
 use ethers_core::types::{Address, U256};
 use ic_cdk::println;
 
-use crate::balances::{add_unstaked_balance};
+use crate::balances::add_unstaked_balance;
 use crate::stake::deposit_lido_if_threshold_reached;
 use crate::{
     evm_rpc::LogEntry,

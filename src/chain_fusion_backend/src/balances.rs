@@ -6,7 +6,6 @@ use ic_stable_structures::{BTreeMap, DefaultMemoryImpl, StableBTreeMap, Storable
 use std::borrow::Cow;
 use std::cell::RefCell;
 use std::thread::LocalKey;
-use ethers_core::k256::elliptic_curve::weierstrass::add;
 
 type BalanceDB = &'static LocalKey<RefCell<BTreeMap<EthAddress, EthBalance, VirtualMemory<DefaultMemoryImpl>>>>;
 
