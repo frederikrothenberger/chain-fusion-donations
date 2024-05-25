@@ -44,7 +44,7 @@ dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
     };
     get_logs_topics = opt vec {
       vec {
-        "0x031ada964b8e520743eb9508d0ace62654b126430b7e5a92b42e78eebb61602e";
+        "0x52a6cdf67c40ce333b3d846e4e143db87f71dd7935612a4cafcf6ba76047ca1f";
       };
     };
     last_scraped_block_number = 0: nat;
@@ -63,4 +63,4 @@ sleep 3
 # safe the chain_fusion canisters evm address
 export EVM_ADDRESS=$(dfx canister call chain_fusion_backend get_evm_address | awk -F'"' '{print $2}')
 # deploy the contract passing the chain_fusion canisters evm address to receive the fees and create a couple of new jobs
-forge script script/Coprocessor.s.sol:MyScript --fork-url http://localhost:8545 --broadcast --sig "run(address)" $EVM_ADDRESS
+forge script script/EthDepositHelper.s.sol:MyScript --fork-url http://localhost:8545 --broadcast --sig "run(address)" $EVM_ADDRESS
