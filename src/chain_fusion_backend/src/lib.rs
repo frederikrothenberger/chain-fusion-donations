@@ -62,7 +62,8 @@ async fn transfer_eth(value: u128, to: String) {
         ic_cdk::trap("only the controller can send transactions");
     }
     println!("transfer_eth: value={}, to={}", value, to);
-    transactions::transfer_eth(U256::from(value), to, Some(U256::from(21000))).await;
+    let fee_estimates = fees::estimate_transaction_fees(9).await;
+    transactions::transfer_eth(U256::from(value), to, U256::from(21000), fee_estimates).await;
 }
 
 // uncomment this if you need to serve stored assets from `storage.rs` via http requests

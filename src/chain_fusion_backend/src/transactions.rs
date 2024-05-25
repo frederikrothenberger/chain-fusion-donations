@@ -7,12 +7,12 @@ use crate::{
         SendRawTransactionStatus, EVM_RPC,
     },
     evm_signer::{self, SignRequest},
-    fees::{self, FeeEstimates},
+    fees::FeeEstimates,
     state::{mutate_state, read_state},
 };
 
-pub async fn transfer_eth(value: U256, to: String, gas: Option<U256>) {
-    let request = create_sign_request(value, Some(to), None, gas, None).await;
+pub async fn transfer_eth(value: U256, to: String, gas: U256, fee_estimates: FeeEstimates) {
+    let request = create_sign_request(value, Some(to), None, gas, None, fee_estimates).await;
 
     let tx = evm_signer::sign_transaction(request).await;
 
@@ -43,13 +43,14 @@ pub async fn create_sign_request(
     value: U256,
     to: Option<String>,
     from: Option<String>,
-    gas: Option<U256>,
+    gas: U256,
     data: Option<Vec<u8>>,
+    fee_estimates: FeeEstimates,
 ) -> SignRequest {
     let FeeEstimates {
         max_fee_per_gas,
         max_priority_fee_per_gas,
-    } = fees::estimate_transaction_fees(9).await;
+    } = fee_estimates;
     let nonce = read_state(|s| s.nonce);
     let rpc_providers = read_state(|s| s.rpc_services.clone());
 

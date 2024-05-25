@@ -80,7 +80,7 @@ pub struct FeeHistoryArgs {
     pub rewardPercentiles: Option<serde_bytes::ByteBuf>,
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Debug)]
 pub struct FeeHistory {
     pub reward: Vec<Vec<candid::Nat>>,
     pub gasUsedRatio: Vec<f64>,

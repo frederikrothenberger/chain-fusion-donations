@@ -67,7 +67,7 @@ pub async fn estimate_transaction_fees(block_count: u8) -> FeeEstimates {
     // from the 95th percentile of the tip.
     let fee_history = fee_history(Nat::from(block_count), BlockTag::Latest, Some(vec![95])).await;
 
-    let median_index = median_index(block_count.into());
+    let median_index = median_index(fee_history.reward.len());
 
     // baseFeePerGas
     let base_fee_per_gas = fee_history.baseFeePerGas.last().unwrap().clone();
