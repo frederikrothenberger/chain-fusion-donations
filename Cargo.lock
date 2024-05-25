@@ -188,6 +188,7 @@ dependencies = [
  "ic-cdk",
  "ic-cdk-timers",
  "ic-stable-structures",
+ "lazy_static",
  "minicbor",
  "minicbor-derive",
  "rand",
