@@ -4,7 +4,8 @@ use ic_stable_structures::{
 };
 use std::cell::RefCell;
 
-pub const BALANCES_MEMORY_ID: MemoryId = MemoryId::new(0);
+pub const UNSTAKED_BALANCES_MEMORY_ID: MemoryId = MemoryId::new(0);
+pub const STAKED_BALANCES_MEMORY_ID: MemoryId = MemoryId::new(1);
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> = RefCell::new(

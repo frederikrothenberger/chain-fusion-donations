@@ -1,8 +1,8 @@
 use ethers_core::types::{Address, U256};
 use ic_cdk::println;
 
-use crate::balances::BalancesRepository;
-use crate::stake::deposit_lido;
+use crate::balances::{add_unstaked_balance};
+use crate::stake::deposit_lido_if_threshold_reached;
 use crate::{
     evm_rpc::LogEntry,
     state::{mutate_state, LogSource},
@@ -14,12 +14,8 @@ pub async fn job(event_source: LogSource, event: LogEntry) {
     // because we deploy the canister with topics only matching
     // NewJob events we can safely assume that the event is a NewJob.
     let received_eth_event = ReceivedEthEvent::from(event);
-    let mut new_balance = received_eth_event.value;
-    if let Some(prev_balance) = BalancesRepository::get_balance(received_eth_event.from) {
-        new_balance += prev_balance;
-    }
-    BalancesRepository::store_balance(received_eth_event.from, new_balance);
-    deposit_lido(received_eth_event.value).await;
+    add_unstaked_balance(received_eth_event.from, received_eth_event.value);
+    deposit_lido_if_threshold_reached().await;
     println!("Received Eth Event: {:?}", received_eth_event);
 }
 
