@@ -26,7 +26,6 @@ async fn process_logs() {
     let logs_to_process = read_state(|s| (s.logs_to_process.clone()));
 
     for (event_source, event) in logs_to_process {
-        println!("running job");
         job(event_source, event).await
     }
 }
@@ -108,7 +107,6 @@ async fn scrape_eth_logs_range_inclusive(from: &Nat, to: &Nat) -> Option<Nat> {
             };
 
             for log_entry in logs {
-                println!("Received event {log_entry:?}",);
                 mutate_state(|s| s.record_log_to_process(&log_entry));
             }
             if read_state(State::has_logs_to_process) {
