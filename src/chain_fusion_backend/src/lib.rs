@@ -9,6 +9,8 @@ mod stake;
 mod state;
 
 // mod storage;
+mod balances;
+mod storage;
 mod transactions;
 mod utils;
 
@@ -21,7 +23,6 @@ use lifecycle::InitArg;
 use state::read_state;
 
 use crate::state::{initialize_state, mutate_state};
-
 
 pub const SCRAPING_LOGS_INTERVAL: Duration = Duration::from_secs(3 * 60);
 
@@ -37,9 +38,9 @@ fn setup_timers() {
             });
         })
     });
-    // // Start scraping logs almost immediately after the install, then repeat with the interval.
-    // ic_cdk_timers::set_timer(Duration::from_secs(10), || ic_cdk::spawn(scrape_eth_logs()));
-    // ic_cdk_timers::set_timer_interval(SCRAPING_LOGS_INTERVAL, || ic_cdk::spawn(scrape_eth_logs()));
+    // Start scraping logs almost immediately after the install, then repeat with the interval.
+    ic_cdk_timers::set_timer(Duration::from_secs(10), || ic_cdk::spawn(scrape_eth_logs()));
+    ic_cdk_timers::set_timer_interval(SCRAPING_LOGS_INTERVAL, || ic_cdk::spawn(scrape_eth_logs()));
 }
 
 #[ic_cdk::init]
