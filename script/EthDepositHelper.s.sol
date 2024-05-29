@@ -25,7 +25,7 @@ contract MyScript is Script {
         // the address we mint to belongs to the deployerPrivateKey
         // again, the transaction is signed with the deployerPrivateKey
         for (uint256 index = 0; index < 10; index++) {
-            ethDepositHelper.deposit{value: 0.1 ether}();
+            ethDepositHelper.deposit{value: 1.1 ether}();
         }
 
         vm.stopBroadcast();

@@ -22,16 +22,22 @@ type InitArg = record {
   get_logs_topics : opt vec vec text;
   last_scraped_block_number : nat;
   rpc_services : RpcServices;
+  rpc_service : RpcService;
   block_tag : BlockTag;
   get_logs_address : vec text;
+  donation_address : text;
 };
 type RpcApi = record { url : text; headers : opt vec HttpHeader };
+type RpcService = variant {
+  EthSepolia : EthSepoliaService;
+  Custom : RpcApi;
+  EthMainnet : EthMainnetService;
+  Chain : nat64;
+  Provider : nat64;
+};
 type RpcServices = variant {
   EthSepolia : opt vec EthSepoliaService;
   Custom : record { chainId : nat64; services : vec RpcApi };
   EthMainnet : opt vec EthMainnetService;
 };
-service : (InitArg) -> {
-  get_evm_address : () -> (text) query;
-  transfer_eth : (nat, text) -> ();
-}
+service : (InitArg) -> { get_evm_address : () -> (text) query }

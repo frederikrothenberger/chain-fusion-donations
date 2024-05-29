@@ -1,4 +1,4 @@
-use crate::storage::{with_memory_manager, UNSTAKED_BALANCES_MEMORY_ID, STAKED_BALANCES_MEMORY_ID};
+use crate::storage::{with_memory_manager, STAKED_BALANCES_MEMORY_ID, UNSTAKED_BALANCES_MEMORY_ID};
 use ethers_core::types::{Address, U256};
 use ic_stable_structures::memory_manager::VirtualMemory;
 use ic_stable_structures::storable::Bound;
@@ -7,7 +7,8 @@ use std::borrow::Cow;
 use std::cell::RefCell;
 use std::thread::LocalKey;
 
-type BalanceDB = &'static LocalKey<RefCell<BTreeMap<EthAddress, EthBalance, VirtualMemory<DefaultMemoryImpl>>>>;
+type BalanceDB =
+    &'static LocalKey<RefCell<BTreeMap<EthAddress, EthBalance, VirtualMemory<DefaultMemoryImpl>>>>;
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
 struct EthAddress(Address);
@@ -62,7 +63,8 @@ thread_local! {
 }
 
 fn get_balance(address: Address, db: BalanceDB) -> Option<U256> {
-    db.with_borrow(|db| db.get(&EthAddress(address))).map(|balance| balance.0)
+    db.with_borrow(|db| db.get(&EthAddress(address)))
+        .map(|balance| balance.0)
 }
 
 fn store_balance(address: Address, new_balance: U256, db: BalanceDB) {
@@ -73,8 +75,15 @@ pub fn total_unstaked_balance() -> U256 {
     total_balance(&UNSTAKED_DB)
 }
 
+pub fn total_staked_balance() -> U256 {
+    total_balance(&STAKED_DB)
+}
+
 fn total_balance(db: BalanceDB) -> U256 {
-    db.with_borrow(|db| db.iter().fold(U256::zero(), |acc, (_, balance)| acc + balance.0))
+    db.with_borrow(|db| {
+        db.iter()
+            .fold(U256::zero(), |acc, (_, balance)| acc + balance.0)
+    })
 }
 
 pub fn add_unstaked_balance(address: Address, added_balance: U256) {
@@ -90,10 +99,13 @@ fn add_balance(address: Address, added_balance: U256, db: BalanceDB) {
 }
 
 pub fn move_unstaked_to_staked() {
-    let addresses: Vec<EthAddress> = UNSTAKED_DB.with_borrow(|db| db.iter().map(|(key, _)| key).collect());
+    let addresses: Vec<EthAddress> =
+        UNSTAKED_DB.with_borrow(|db| db.iter().map(|(key, _)| key).collect());
     for address in addresses {
-         if let Some(balance) = UNSTAKED_DB.with_borrow_mut(|unstaked_db| unstaked_db.remove(&address)){
+        if let Some(balance) =
+            UNSTAKED_DB.with_borrow_mut(|unstaked_db| unstaked_db.remove(&address))
+        {
             add_balance(address.0, balance.0, &STAKED_DB);
-         }
+        }
     }
 }

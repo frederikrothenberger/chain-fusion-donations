@@ -2,7 +2,7 @@ use ethers_core::types::{Address, U256};
 use ic_cdk::println;
 
 use crate::balances::add_unstaked_balance;
-use crate::stake::deposit_lido_if_threshold_reached;
+use crate::lido::deposit_steth_if_threshold_reached;
 use crate::{
     evm_rpc::LogEntry,
     state::{mutate_state, LogSource},
@@ -15,7 +15,7 @@ pub async fn job(event_source: LogSource, event: LogEntry) {
     // NewJob events we can safely assume that the event is a NewJob.
     let received_eth_event = ReceivedEthEvent::from(event);
     add_unstaked_balance(received_eth_event.from, received_eth_event.value);
-    deposit_lido_if_threshold_reached().await;
+    deposit_steth_if_threshold_reached().await;
     println!("Received Eth Event: {:?}", received_eth_event);
 }
 
@@ -32,7 +32,7 @@ impl From<LogEntry> for ReceivedEthEvent {
         let from =
             ethers_core::types::Address::from_str(&entry.topics[1][entry.topics[1].len() - 40..])
                 .expect("the address contained in the first topic should be valid");
-        let value = U256::from_str_radix(&entry.data, 16).expect("the token id should be valid");
+        let value = U256::from_str_radix(&entry.data, 16).expect("the balance should be valid");
 
         ReceivedEthEvent { from, value }
     }
