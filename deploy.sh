@@ -35,7 +35,9 @@ dfx deploy evm_rpc
 # the `get_logs_address` here. in our case we are listening for mint events,
 # that is transfer events with the `from` field being the zero address.
 # you can read more about event signatures [here](https://docs.alchemy.com/docs/deep-dive-into-eth_getlogs#what-are-event-signatures)
-dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
+cargo build --release --target wasm32-unknown-unknown --package chain_fusion_backend
+dfx canister create --with-cycles 10_000_000_000_000 chain_fusion_backend
+dfx canister install --wasm target/wasm32-unknown-unknown/release/chain_fusion_backend.wasm chain_fusion_backend --argument '(
   record {
     ecdsa_key_id = record {
       name = "dfx_test_key";
@@ -53,6 +55,13 @@ dfx deploy chain_fusion_backend --with-cycles 10_000_000_000_000 --argument '(
         services = vec { record { url = "https://localhost:8546"; headers = null } };
       }
     };
+    rpc_service = variant {
+      Custom = record {
+        url = "https://localhost:8546";
+        headers = null;
+      }
+    };
+    donation_address = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
     get_logs_address = vec { "0x219f09C912A765E456e154C14a0Cf9aC5e84F188" };
     block_tag = variant { Latest = null };
   },

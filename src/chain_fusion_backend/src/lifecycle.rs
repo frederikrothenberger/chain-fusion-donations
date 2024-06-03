@@ -5,16 +5,18 @@ use ethers_core::types::{H256, U256};
 use ic_cdk::api::management_canister::ecdsa::EcdsaKeyId;
 use std::str::FromStr;
 
-use crate::evm_rpc::{BlockTag, RpcServices};
+use crate::evm_rpc::{BlockTag, RpcService, RpcServices};
 
 #[derive(CandidType, Deserialize, Clone, Debug)]
 pub struct InitArg {
     pub rpc_services: RpcServices,
+    pub rpc_service: RpcService,
     pub get_logs_address: Vec<String>,
     pub get_logs_topics: Option<Vec<Vec<String>>>,
     pub last_scraped_block_number: Nat,
     pub ecdsa_key_id: EcdsaKeyId,
     pub block_tag: BlockTag,
+    pub donation_address: String,
 }
 
 impl TryFrom<InitArg> for State {
@@ -23,11 +25,13 @@ impl TryFrom<InitArg> for State {
     fn try_from(
         InitArg {
             rpc_services,
+            rpc_service,
             get_logs_address,
             get_logs_topics,
             last_scraped_block_number,
             ecdsa_key_id,
             block_tag,
+            donation_address,
         }: InitArg,
     ) -> Result<Self, Self::Error> {
         // validate contract addresses
@@ -36,6 +40,10 @@ impl TryFrom<InitArg> for State {
                 InvalidStateError::InvalidEthereumContractAddress(format!("ERROR: {}", e))
             })?;
         }
+        // validate donation addresses
+        ethers_core::types::Address::from_str(&donation_address).map_err(|e| {
+            InvalidStateError::InvalidEthereumContractAddress(format!("ERROR: {}", e))
+        })?;
         // validate get_logs topics
         if let Some(topics) = &get_logs_topics {
             for topic in topics {
@@ -45,6 +53,7 @@ impl TryFrom<InitArg> for State {
 
         let state = Self {
             rpc_services,
+            rpc_service,
             get_logs_address,
             get_logs_topics,
             last_scraped_block_number,
@@ -58,6 +67,7 @@ impl TryFrom<InitArg> for State {
             evm_address: None,
             nonce: U256::zero(),
             block_tag,
+            donation_address,
         };
         Ok(state)
     }
